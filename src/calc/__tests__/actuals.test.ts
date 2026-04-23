@@ -96,4 +96,11 @@ describe('calcActuals', () => {
       expect(r.monthlyDifference).toBeNull()
     })
   })
+
+  it('December cumulative expected minus forecasted equals sum of monthly forecast variances (QA)', () => {
+    const rows = calcActuals(forecast.monthly, BUDGET, sampleActuals)
+    const sumForecast = rows.reduce((s, r) => s + r.forecastNetVariance, 0)
+    const dec = rows[11]!
+    expect(dec.cumulativeExpectedSpend - dec.cumulativeForecastedSpend).toBeCloseTo(sumForecast, 2)
+  })
 })
