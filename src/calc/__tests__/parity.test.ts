@@ -8,7 +8,7 @@
  * before proceeding to later phases.
  */
 import { describe, it, expect } from 'vitest'
-import { DEFAULTS, runModel, deriveFiscalContext, calcActuals } from '../index'
+import { DEFAULTS, runModel, calcActuals } from '../index'
 
 const MODEL = runModel({
   fiscal: DEFAULTS.fiscal,
