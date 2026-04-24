@@ -19,3 +19,18 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+@media print {
+  @page {
+    margin: 15mm;
+  }
+
+  body {
+    background: white !important;
+    color: oklch(0.2 0 0);
+  }
+
+  .recharts-wrapper {
+    break-inside: avoid;
+  }
+}

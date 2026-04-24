@@ -27,7 +27,7 @@ export function CumulativeForecastChart({ data }: Props) {
   const gradientId = 'cumGradient'
 
   return (
-    <div className="rounded-xl border border-zinc-200 bg-white p-5">
+    <div className="rounded-xl border border-zinc-200 bg-white p-5 print:break-inside-avoid">
       <h3 className="mb-4 text-sm font-semibold text-zinc-700">Cumulative Forecast (YTD)</h3>
       <ResponsiveContainer width="100%" height={220}>
         <AreaChart data={data} margin={{ top: 4, right: 8, bottom: 0, left: 8 }}>

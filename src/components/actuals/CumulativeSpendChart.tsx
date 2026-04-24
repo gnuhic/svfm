@@ -42,7 +42,7 @@ export function CumulativeSpendChart({ rows }: Props) {
   const data = buildChartData(rows)
 
   return (
-    <div className="rounded-xl border border-zinc-200 bg-white p-5">
+    <div className="rounded-xl border border-zinc-200 bg-white p-5 print:break-inside-avoid">
       <h3 className="mb-1 text-sm font-semibold text-zinc-700">Cumulative salary spend</h3>
       <p className="mb-4 text-xs text-zinc-500">
         Expected follows the budget baseline. Forecasted applies the model variance path. Actual

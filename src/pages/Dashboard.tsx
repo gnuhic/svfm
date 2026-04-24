@@ -146,6 +146,16 @@ export default function Dashboard() {
         </p>
       </header>
 
+      {!serviceName.trim() && (
+        <p
+          role="status"
+          className="rounded-lg border border-zinc-300 bg-zinc-100 px-4 py-3 text-sm leading-relaxed text-zinc-800"
+        >
+          Police service name is not set. Enter it in the header (or under Settings) so exports and
+          printed materials identify the organization.
+        </p>
+      )}
+
       <section aria-labelledby="dash-variance-heading">
         <h2 id="dash-variance-heading" className="sr-only">
           Net variance and driver breakdown

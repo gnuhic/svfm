@@ -21,6 +21,10 @@ export default function Actuals() {
 
   const rows = useMemo(() => selectActualsRows(appData), [appData])
   const netYearly = useMemo(() => selectModelResults(appData).summary.netYearlySalaryVariance, [appData])
+  const hasAnyActual = useMemo(
+    () => actuals.some((a) => a.actualSalaryVariance !== null),
+    [actuals],
+  )
 
   return (
     <div className="space-y-8 p-8">
@@ -37,6 +41,15 @@ export default function Actuals() {
         <h2 id="actuals-chart-heading" className="sr-only">
           Cumulative spend trajectories
         </h2>
+        {!hasAnyActual && (
+          <p
+            role="status"
+            className="rounded-lg border border-zinc-200 bg-white px-4 py-3 text-sm leading-relaxed text-zinc-600"
+          >
+            No monthly actual variances are entered yet. The actual cumulative spend line will
+            appear once values are provided from January forward without gaps (per workbook logic).
+          </p>
+        )}
         <CumulativeSpendChart rows={rows} />
       </section>
 

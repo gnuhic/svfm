@@ -15,7 +15,7 @@ interface NavTabsProps {
 
 export default function NavTabs({ active, onChange }: NavTabsProps) {
   return (
-    <nav className="border-b border-zinc-200 bg-white">
+    <nav className="border-b border-zinc-200 bg-white print:hidden">
       <div className="mx-auto max-w-7xl px-6">
         <ul className="flex gap-0" role="tablist">
           {TABS.map((tab) => (
