@@ -11,6 +11,13 @@ import type {
   PayAdjustmentInputs,
 } from '@/calc/index'
 
+/** Safe for user-facing errors — avoids String(object) → "[object Object]" (no-base-to-string). */
+function formatImportedSchemaVersion(value: unknown): string {
+  if (typeof value === 'string') return value
+  if (typeof value === 'number' && Number.isFinite(value)) return String(value)
+  return 'invalid or missing'
+}
+
 // ── Zod validation schema ────────────────────────────────────────────────────
 
 const AppDataSchema = z.object({
@@ -129,7 +136,7 @@ export const useAppStore = create<AppStore>()(
         if (incomingVersion && incomingVersion !== SCHEMA_VERSION) {
           return {
             success: false,
-            error: `Incompatible schema version: the file uses version "${String(incomingVersion)}", this application expects "${SCHEMA_VERSION}".`,
+            error: `Incompatible schema version: the file uses version "${formatImportedSchemaVersion(incomingVersion)}", this application expects "${SCHEMA_VERSION}".`,
           }
         }
 
