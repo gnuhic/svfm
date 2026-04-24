@@ -4,6 +4,8 @@ import { selectActualsRows, selectModelResults } from '@/state/selectors'
 import type { AppData } from '@/state/types'
 import { ActualsMonthlyTable } from '@/components/actuals/ActualsMonthlyTable'
 import { CumulativeSpendChart } from '@/components/actuals/CumulativeSpendChart'
+import { ForecastVsActualVarianceChart } from '@/components/actuals/ForecastVsActualVarianceChart'
+import { MonthlySpendComparisonChart } from '@/components/actuals/MonthlySpendComparisonChart'
 import { ActualsQaRow } from '@/components/actuals/ActualsQaRow'
 
 export default function Actuals() {
@@ -51,6 +53,16 @@ export default function Actuals() {
           </p>
         )}
         <CumulativeSpendChart rows={rows} />
+      </section>
+
+      <section className="space-y-4" aria-labelledby="actuals-monthly-charts-heading">
+        <h2 id="actuals-monthly-charts-heading" className="text-sm font-semibold text-zinc-800">
+          Monthly comparisons
+        </h2>
+        <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
+          <ForecastVsActualVarianceChart rows={rows} />
+          <MonthlySpendComparisonChart rows={rows} />
+        </div>
       </section>
 
       <section aria-labelledby="actuals-grid-heading" className="space-y-3">
