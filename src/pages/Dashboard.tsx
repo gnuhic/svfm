@@ -4,7 +4,7 @@ import { selectModelResults } from '@/state/selectors'
 import type { AppData } from '@/state/types'
 import { SummaryCard } from '@/components/dashboard/SummaryCard'
 import { DriverCard } from '@/components/dashboard/DriverCard'
-import { MonthlyVarianceChart } from '@/components/dashboard/MonthlyVarianceChart'
+import { MonthlyVarianceValueCard } from '@/components/dashboard/MonthlyVarianceValueCard'
 import { CumulativeForecastChart } from '@/components/dashboard/CumulativeForecastChart'
 import { fmtDollar, fmtDecimal, fmtInteger, fmtPct, fmtVariance } from '@/lib/format'
 
@@ -199,7 +199,7 @@ export default function Dashboard() {
           V1 uses an even spread across twelve months (no seasonality weighting).
         </p>
         <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
-          <MonthlyVarianceChart data={forecast.monthly} />
+          <MonthlyVarianceValueCard data={forecast.monthly} />
           <CumulativeForecastChart data={forecast.monthly} />
         </div>
       </section>
