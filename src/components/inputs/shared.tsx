@@ -7,16 +7,43 @@ interface SectionCardProps {
   title: string
   description?: string
   children: React.ReactNode
+  collapsed?: boolean
+  onToggle?: () => void
 }
 
-export function SectionCard({ title, description, children }: SectionCardProps) {
+export function SectionCard({
+  title,
+  description,
+  children,
+  collapsed = false,
+  onToggle,
+}: SectionCardProps) {
+  const isCollapsible = typeof onToggle === 'function'
+
   return (
     <section className="overflow-hidden rounded border border-zinc-200 bg-white">
-      <div className="border-b border-zinc-200 bg-zinc-50 px-6 py-3.5">
-        <h3 className="text-xs font-semibold uppercase tracking-widest text-zinc-700">{title}</h3>
-        {description && <p className="mt-0.5 text-xs text-zinc-500">{description}</p>}
-      </div>
-      <div className="flex divide-x divide-zinc-200">{children}</div>
+      {isCollapsible ? (
+        <button
+          type="button"
+          onClick={onToggle}
+          aria-expanded={!collapsed}
+          className="flex w-full items-start justify-between gap-4 border-b border-zinc-200 bg-zinc-50 px-6 py-3.5 text-left"
+        >
+          <span>
+            <h3 className="text-xs font-semibold uppercase tracking-widest text-zinc-700">{title}</h3>
+            {description && <p className="mt-0.5 text-xs text-zinc-500">{description}</p>}
+          </span>
+          <span className="pt-0.5 text-xs font-semibold uppercase tracking-wide text-zinc-500">
+            {collapsed ? 'Expand' : 'Collapse'}
+          </span>
+        </button>
+      ) : (
+        <div className="border-b border-zinc-200 bg-zinc-50 px-6 py-3.5">
+          <h3 className="text-xs font-semibold uppercase tracking-widest text-zinc-700">{title}</h3>
+          {description && <p className="mt-0.5 text-xs text-zinc-500">{description}</p>}
+        </div>
+      )}
+      {!collapsed && <div className="flex divide-x divide-zinc-200">{children}</div>}
     </section>
   )
 }

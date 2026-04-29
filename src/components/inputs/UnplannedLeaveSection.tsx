@@ -23,12 +23,13 @@ const Schema = z.object({
     .max(100, 'Must be ≤ 100'),
 })
 type FormValues = z.infer<typeof Schema>
+type SectionDisclosureProps = { collapsed?: boolean; onToggle?: () => void }
 
 function safeNum(v: number | undefined, fallback: number): number {
   return typeof v === 'number' && isFinite(v) ? v : fallback
 }
 
-export function UnplannedLeaveSection() {
+export function UnplannedLeaveSection({ collapsed, onToggle }: SectionDisclosureProps) {
   const { assumptions, drivers, updateUnplannedLeave } = useAppStore()
   const { unplannedLeave } = drivers
 
@@ -73,6 +74,8 @@ export function UnplannedLeaveSection() {
     <SectionCard
       title="Unplanned Leave"
       description="Disability, unpaid leave, and secondments. Salary avoidance is locked at $0 because pay often continues or is recovered."
+      collapsed={collapsed}
+      onToggle={onToggle}
     >
       <InputsPane>
         <FieldGroup>

@@ -24,12 +24,13 @@ const Schema = z.object({
     .max(100, 'Must be ≤ 100'),
 })
 type FormValues = z.infer<typeof Schema>
+type SectionDisclosureProps = { collapsed?: boolean; onToggle?: () => void }
 
 function safeNum(v: number | undefined, fallback: number): number {
   return typeof v === 'number' && isFinite(v) ? v : fallback
 }
 
-export function VacanciesSection() {
+export function VacanciesSection({ collapsed, onToggle }: SectionDisclosureProps) {
   const { assumptions, drivers, updateVacancies } = useAppStore()
   const { vacancies } = drivers
 
@@ -74,6 +75,8 @@ export function VacanciesSection() {
     <SectionCard
       title="Vacancies"
       description="Positions left unfilled during the recruitment lag — a source of salary avoidance offset by overtime backfill costs."
+      collapsed={collapsed}
+      onToggle={onToggle}
     >
       <InputsPane>
         <FieldGroup>

@@ -19,12 +19,13 @@ const Schema = z.object({
   avgAnnualSalary: z.number({ invalid_type_error: 'Required' }).positive('Must be positive'),
 })
 type FormValues = z.infer<typeof Schema>
+type SectionDisclosureProps = { collapsed?: boolean; onToggle?: () => void }
 
 function safeNum(v: number | undefined, fallback: number): number {
   return typeof v === 'number' && isFinite(v) ? v : fallback
 }
 
-export function FiscalContextSection() {
+export function FiscalContextSection({ collapsed, onToggle }: SectionDisclosureProps) {
   const { assumptions, updateAssumptions } = useAppStore()
 
   const form = useForm<FormValues>({
@@ -57,6 +58,8 @@ export function FiscalContextSection() {
     <SectionCard
       title="Fiscal Context"
       description="Global assumptions that feed all four driver calculations."
+      collapsed={collapsed}
+      onToggle={onToggle}
     >
       <InputsPane>
         <FieldGroup>

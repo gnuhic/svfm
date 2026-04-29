@@ -4,9 +4,11 @@ import { selectModelResults } from '@/state/selectors'
 import type { AppData } from '@/state/types'
 import { SummaryCard } from '@/components/dashboard/SummaryCard'
 import { DriverCard } from '@/components/dashboard/DriverCard'
+import { YtdVarianceCard } from '@/components/dashboard/YtdVarianceCard'
 import { MonthlyVarianceValueCard } from '@/components/dashboard/MonthlyVarianceValueCard'
 import { CumulativeForecastChart } from '@/components/dashboard/CumulativeForecastChart'
 import { fmtDollar, fmtDecimal, fmtInteger, fmtPct, fmtVariance } from '@/lib/format'
+import { monthAbbr } from '@/lib/monthLabels'
 
 function TipBlock({ title, children }: { title: string; children: ReactNode }) {
   return (
@@ -42,6 +44,31 @@ export default function Dashboard() {
   const model = useMemo(() => selectModelResults(appData), [appData])
   const { fiscalDerived, drivers: d, summary, forecast } = model
   const { vacancies, unplannedLeave, plannedLeave, payAdjustments } = drivers
+  const monthFormatter = useMemo(() => new Intl.DateTimeFormat('en-CA', { month: 'long' }), [])
+  const currentMonth = new Date().getMonth() + 1
+  const currentYear = new Date().getFullYear()
+  const latestCompleteMonth = currentMonth === 1 ? 12 : currentMonth - 1
+  const latestCompleteYear = currentMonth === 1 ? currentYear - 1 : currentYear
+  const throughLabel = `${monthFormatter.format(new Date(latestCompleteYear, latestCompleteMonth - 1, 1))} ${latestCompleteYear}`
+  const currentMonthLabel = monthFormatter.format(new Date(currentYear, currentMonth - 1, 1))
+  const ytdBreakdown = useMemo(() => {
+    const actualByMonth = new Map(actuals.map((entry) => [entry.month, entry.actualSalaryVariance]))
+
+    return Array.from({ length: latestCompleteMonth }, (_, idx) => {
+      const month = idx + 1
+      const actualVariance = actualByMonth.get(month)
+      const forecastVariance = forecast.monthly[month - 1]?.netMonthlyVariance ?? 0
+      const value = actualVariance ?? forecastVariance
+      return {
+        monthLabel: monthAbbr(month),
+        source: actualVariance === null ? ('Forecast' as const) : ('Actual' as const),
+        value,
+      }
+    })
+  }, [actuals, forecast.monthly, latestCompleteMonth])
+  const ytdVariance = useMemo(() => {
+    return ytdBreakdown.reduce((sum, line) => sum + line.value, 0)
+  }, [ytdBreakdown])
 
   const vacancyTip = (
     <div className="space-y-3">
@@ -160,8 +187,16 @@ export default function Dashboard() {
         <h2 id="dash-variance-heading" className="sr-only">
           Net variance and driver breakdown
         </h2>
+        <p className="text-base font-semibold text-zinc-700">Current month: {currentMonthLabel}</p>
         <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
-          <SummaryCard summary={summary} />
+          <div className="space-y-4">
+            <YtdVarianceCard
+              ytdVariance={ytdVariance}
+              throughLabel={throughLabel}
+              breakdown={ytdBreakdown}
+            />
+            <SummaryCard summary={summary} />
+          </div>
           <div className="grid min-w-0 flex-1 grid-cols-1 gap-4 sm:grid-cols-2">
             <DriverCard
               title="Vacancies"

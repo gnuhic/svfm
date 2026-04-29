@@ -18,12 +18,13 @@ const Schema = z.object({
   other: z.number({ invalid_type_error: 'Required' }).min(0, 'Must be ≥ 0'),
 })
 type FormValues = z.infer<typeof Schema>
+type SectionDisclosureProps = { collapsed?: boolean; onToggle?: () => void }
 
 function safeNum(v: number | undefined, fallback: number): number {
   return typeof v === 'number' && isFinite(v) ? v : fallback
 }
 
-export function PayAdjustmentsSection() {
+export function PayAdjustmentsSection({ collapsed, onToggle }: SectionDisclosureProps) {
   const { drivers, updatePayAdjustments } = useAppStore()
   const { payAdjustments } = drivers
 
@@ -57,6 +58,8 @@ export function PayAdjustmentsSection() {
     <SectionCard
       title="Pay Adjustments"
       description="In-year salary pressures not captured in the vacancy or leave drivers."
+      collapsed={collapsed}
+      onToggle={onToggle}
     >
       <InputsPane>
         <FieldGroup>
