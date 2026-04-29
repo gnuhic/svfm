@@ -80,7 +80,10 @@ export default function Dashboard() {
       </TipBlock>
       <TipBlock title="Derived fiscal">
         <TipLine label="Avg monthly salary" value={fmtDollar(fiscalDerived.avgMonthlySalary)} />
-        <TipLine label="Avg monthly OT cost" value={fmtDollar(fiscalDerived.avgMonthlyOvertimeCost)} />
+        <TipLine
+          label="Average monthly salary variance based on total salary budget"
+          value={fmtDollar(fiscalDerived.avgMonthlyOvertimeCost)}
+        />
       </TipBlock>
       <TipBlock title="Calculations">
         <TipLine label="Avg vacant positions" value={fmtDecimal(d.vacancy.avgVacantPositions)} />
@@ -104,7 +107,10 @@ export default function Dashboard() {
       </TipBlock>
       <TipBlock title="Model basis">
         <TipLine label="Salary avoidance" value={fmtDollar(0)} />
-        <TipLine label="Avg monthly OT cost" value={fmtDollar(fiscalDerived.avgMonthlyOvertimeCost)} />
+        <TipLine
+          label="Average monthly salary variance based on total salary budget"
+          value={fmtDollar(fiscalDerived.avgMonthlyOvertimeCost)}
+        />
       </TipBlock>
       <TipBlock title="Calculations">
         <TipLine label="Avg vacant positions" value={fmtDecimal(d.unplannedLeave.avgVacantPositions)} />

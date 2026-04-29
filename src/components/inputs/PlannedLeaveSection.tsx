@@ -63,7 +63,11 @@ export function PlannedLeaveSection({ collapsed, onToggle }: SectionDisclosurePr
       ),
       backfillRate: safeNum(w.backfillPct, plannedLeave.backfillRate * 100) / 100,
     },
-    { ...derived, numberOfOfficers: assumptions.numberOfOfficers },
+    {
+      ...derived,
+      numberOfOfficers: assumptions.numberOfOfficers,
+      overtimeRateMultiplier: assumptions.overtimeRateMultiplier,
+    },
   )
 
   const { errors } = form.formState
@@ -108,9 +112,8 @@ export function PlannedLeaveSection({ collapsed, onToggle }: SectionDisclosurePr
           />
         </FieldGroup>
         <DriverFormNote>
-          Officers affected is locked to total headcount. The avg FTE-equivalent vacant positions
-          (column H) is calculated as Officers × Duration ÷ 12, which differs from the vacancy and
-          unplanned leave drivers.
+          Officers affected is locked to total headcount, assuming that all officers are subject to
+          planned leave.
         </DriverFormNote>
       </InputsPane>
 

@@ -24,6 +24,7 @@ type FiscalNeeded = FiscalContextDerived & { numberOfOfficers: number }
  *
  * Officers Affected is locked to numberOfOfficers (V1 decision #1).
  * Salary Avoidance is locked at 0 — salary is still paid during planned leave (V1 decision #2).
+ * Coverage Costs = Officers Affected × (Avg Planned Leave per Officer / 12) × Avg Annual Salary × Backfill Rate × OT Rate Multiplier
  */
 export function calcPlannedLeave(
   inputs: PlannedLeaveDriverInputs,
@@ -33,8 +34,13 @@ export function calcPlannedLeave(
   const avgVacantPositions = (officersAffected * inputs.durationMonthsPerOfficer) / 12
   const positionMonths = officersAffected * inputs.durationMonthsPerOfficer
   const salaryAvoidance = 0
+  const avgAnnualSalary = fiscal.avgMonthlySalary * 12
   const coverageSalaryCosts =
-    positionMonths * inputs.backfillRate * fiscal.avgMonthlyOvertimeCost
+    officersAffected *
+    (inputs.durationMonthsPerOfficer / 12) *
+    avgAnnualSalary *
+    inputs.backfillRate *
+    fiscal.overtimeRateMultiplier
   return {
     officersAffected,
     avgVacantPositions,

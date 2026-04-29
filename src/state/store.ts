@@ -28,6 +28,7 @@ const AppDataSchema = z.object({
     totalSalaryBudget: z.number().positive(),
     numberOfOfficers: z.number().int().positive(),
     avgAnnualSalary: z.number().positive(),
+    overtimeRateMultiplier: z.number().positive().default(1),
   }),
   drivers: z.object({
     vacancies: z.object({

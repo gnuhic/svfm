@@ -25,6 +25,7 @@ describe('initial state', () => {
     expect(assumptions.totalSalaryBudget).toBe(26_000_000)
     expect(assumptions.numberOfOfficers).toBe(185)
     expect(assumptions.avgAnnualSalary).toBe(140_000)
+    expect(assumptions.overtimeRateMultiplier).toBe(1)
   })
 
   it('actuals array has exactly 12 entries', () => {
@@ -77,6 +78,7 @@ describe('updateAssumptions', () => {
     expect(assumptions.totalSalaryBudget).toBe(30_000_000)
     expect(assumptions.numberOfOfficers).toBe(185)
     expect(assumptions.avgAnnualSalary).toBe(140_000)
+    expect(assumptions.overtimeRateMultiplier).toBe(1)
   })
 
   it('can update multiple fields in one call', () => {
@@ -205,7 +207,12 @@ describe('loadFromJSON', () => {
   const validPayload = {
     ...DEFAULT_STATE,
     serviceName: 'Toronto Police Service',
-    assumptions: { totalSalaryBudget: 50_000_000, numberOfOfficers: 350, avgAnnualSalary: 145_000 },
+    assumptions: {
+      totalSalaryBudget: 50_000_000,
+      numberOfOfficers: 350,
+      avgAnnualSalary: 145_000,
+      overtimeRateMultiplier: 1,
+    },
   }
 
   it('loads valid state and returns success', () => {

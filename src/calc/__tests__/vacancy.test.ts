@@ -4,7 +4,11 @@ import { deriveFiscalContext, type FiscalContextInputs } from '../fiscalContext'
 import { DEFAULTS } from '../index'
 
 function fiscalFull(f: FiscalContextInputs) {
-  return { ...deriveFiscalContext(f), numberOfOfficers: f.numberOfOfficers }
+  return {
+    ...deriveFiscalContext(f),
+    numberOfOfficers: f.numberOfOfficers,
+    overtimeRateMultiplier: f.overtimeRateMultiplier,
+  }
 }
 
 describe('calcVacancy', () => {
@@ -26,15 +30,15 @@ describe('calcVacancy', () => {
     expect(result.salaryAvoidance).toBeCloseTo(388_500, 2)
   })
 
-  it('computes coverageSalaryCosts = positionMonths × backfillRate × avgMonthlyOTCost', () => {
+  it('computes coverageSalaryCosts = salaryAvoidance × backfillRate × overtimeRateMultiplier', () => {
     const result = calcVacancy(DEFAULTS.vacancies, fiscalFull(DEFAULTS.fiscal))
-    // 33.3 × 0.40 × 8,333.33 = 111,000
-    expect(result.coverageSalaryCosts).toBeCloseTo(111_000, 2)
+    // 388,500 × 0.40 × 1 = 155,400
+    expect(result.coverageSalaryCosts).toBeCloseTo(155_400, 2)
   })
 
-  it('golden: net vacancy impact = 277,500', () => {
+  it('golden: net vacancy impact = 233,100', () => {
     const result = calcVacancy(DEFAULTS.vacancies, fiscalFull(DEFAULTS.fiscal))
-    expect(result.netImpact).toBeCloseTo(277_500, 2)
+    expect(result.netImpact).toBeCloseTo(233_100, 2)
   })
 
   it('net impact is positive (surplus) when salary avoidance exceeds coverage costs', () => {

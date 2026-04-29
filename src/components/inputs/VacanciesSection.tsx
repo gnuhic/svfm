@@ -66,7 +66,7 @@ export function VacanciesSection({ collapsed, onToggle }: SectionDisclosureProps
       durationMonths: safeNum(w.durationMonths, vacancies.durationMonths),
       backfillRate: safeNum(w.backfillPct, vacancies.backfillRate * 100) / 100,
     },
-    { ...derived, numberOfOfficers: assumptions.numberOfOfficers },
+    { ...derived, numberOfOfficers: assumptions.numberOfOfficers, overtimeRateMultiplier: assumptions.overtimeRateMultiplier },
   )
 
   const { errors } = form.formState

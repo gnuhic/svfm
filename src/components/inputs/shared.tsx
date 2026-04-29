@@ -134,8 +134,8 @@ interface CalcRowProps {
 
 export function CalcRow({ label, value, muted = false }: CalcRowProps) {
   return (
-    <div className="flex items-baseline justify-between py-1">
-      <span className={cn('text-xs', muted ? 'text-zinc-400' : 'text-zinc-500')}>{label}</span>
+    <div className="flex items-baseline justify-between gap-4 py-1">
+      <span className={cn('text-xs', muted ? 'text-zinc-400' : 'text-zinc-500')}>{label}:</span>
       <span
         className={cn(
           'font-mono text-sm tabular-nums',

@@ -2,6 +2,7 @@ export type FiscalContextInputs = {
   totalSalaryBudget: number
   numberOfOfficers: number
   avgAnnualSalary: number
+  overtimeRateMultiplier: number
 }
 
 export type FiscalContextDerived = {

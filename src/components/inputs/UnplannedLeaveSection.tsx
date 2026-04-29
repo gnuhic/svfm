@@ -65,7 +65,10 @@ export function UnplannedLeaveSection({ collapsed, onToggle }: SectionDisclosure
       durationMonths: safeNum(w.durationMonths, unplannedLeave.durationMonths),
       backfillRate: safeNum(w.backfillPct, unplannedLeave.backfillRate * 100) / 100,
     },
-    derived,
+    {
+      avgMonthlySalary: derived.avgMonthlySalary,
+      overtimeRateMultiplier: assumptions.overtimeRateMultiplier,
+    },
   )
 
   const { errors } = form.formState

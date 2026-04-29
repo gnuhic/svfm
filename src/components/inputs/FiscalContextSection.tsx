@@ -17,6 +17,7 @@ const Schema = z.object({
     .int('Must be a whole number')
     .positive('Must be positive'),
   avgAnnualSalary: z.number({ invalid_type_error: 'Required' }).positive('Must be positive'),
+  overtimeRateMultiplier: z.number({ invalid_type_error: 'Required' }).positive('Must be positive'),
 })
 type FormValues = z.infer<typeof Schema>
 type SectionDisclosureProps = { collapsed?: boolean; onToggle?: () => void }
@@ -49,8 +50,11 @@ export function FiscalContextSection({ collapsed, onToggle }: SectionDisclosureP
     totalSalaryBudget: safeNum(w.totalSalaryBudget, assumptions.totalSalaryBudget),
     numberOfOfficers: safeNum(w.numberOfOfficers, assumptions.numberOfOfficers),
     avgAnnualSalary: safeNum(w.avgAnnualSalary, assumptions.avgAnnualSalary),
+    overtimeRateMultiplier: safeNum(w.overtimeRateMultiplier, assumptions.overtimeRateMultiplier),
   }
   const derived = deriveFiscalContext(liveInputs)
+  const totalMonthlySalaryExpenditure =
+    (liveInputs.numberOfOfficers * liveInputs.avgAnnualSalary) / 12
 
   const { errors } = form.formState
 
@@ -90,19 +94,27 @@ export function FiscalContextSection({ collapsed, onToggle }: SectionDisclosureP
             {...form.register('avgAnnualSalary', { valueAsNumber: true })}
             error={errors.avgAnnualSalary?.message}
           />
+          <InputField
+            id="overtimeRateMultiplier"
+            label="Overtime rate multiplier"
+            unit="(elevated rate paid for OT, if applicable)"
+            step="0.1"
+            min="0"
+            {...form.register('overtimeRateMultiplier', { valueAsNumber: true })}
+            error={errors.overtimeRateMultiplier?.message}
+          />
         </FieldGroup>
       </InputsPane>
 
       <PreviewPane>
-        <CalcRow label="Avg monthly salary" value={fmtDollar(derived.avgMonthlySalary)} />
         <CalcRow
-          label="Avg monthly OT cost"
+          label="Total monthly salary expenditure"
+          value={fmtDollar(totalMonthlySalaryExpenditure)}
+        />
+        <CalcRow
+          label="Average monthly salary variance based on total salary budget"
           value={fmtDollar(derived.avgMonthlyOvertimeCost)}
         />
-        <p className="mt-3 text-xs leading-relaxed text-zinc-400">
-          OT cost is the residual budget (total − base salaries) spread across 12 months. It feeds
-          all backfill cost calculations.
-        </p>
         <p className="mt-2 text-xs leading-relaxed text-zinc-400">
           Officers used in driver rows:{' '}
           <span className="font-semibold text-zinc-500">

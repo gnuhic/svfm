@@ -59,6 +59,7 @@ export const DEFAULTS = {
     totalSalaryBudget: 26_000_000,
     numberOfOfficers: 185,
     avgAnnualSalary: 140_000,
+    overtimeRateMultiplier: 1,
   },
   vacancies: {
     frequencyPercent: 0.03,
@@ -110,10 +111,13 @@ export type ModelResults = {
  */
 export function runModel(inputs: ModelInputs): ModelResults {
   const fiscalDerived = deriveFiscalContext(inputs.fiscal)
-  const fiscalFull = { ...fiscalDerived, numberOfOfficers: inputs.fiscal.numberOfOfficers }
+  const fiscalFull = { ...fiscalDerived, numberOfOfficers: inputs.fiscal.numberOfOfficers, overtimeRateMultiplier: inputs.fiscal.overtimeRateMultiplier }
 
   const vacancy = calcVacancy(inputs.vacancies, fiscalFull)
-  const unplannedLeave = calcUnplannedLeave(inputs.unplannedLeave, fiscalDerived)
+  const unplannedLeave = calcUnplannedLeave(inputs.unplannedLeave, {
+    avgMonthlySalary: fiscalDerived.avgMonthlySalary,
+    overtimeRateMultiplier: inputs.fiscal.overtimeRateMultiplier,
+  })
   const plannedLeave = calcPlannedLeave(inputs.plannedLeave, fiscalFull)
   const payAdjustments = calcPayAdjustments(inputs.payAdjustments)
 

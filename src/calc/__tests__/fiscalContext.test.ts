@@ -19,6 +19,7 @@ describe('deriveFiscalContext', () => {
       totalSalaryBudget: 100,
       numberOfOfficers: 10,
       avgAnnualSalary: 10,
+      overtimeRateMultiplier: 1,
     })
     expect(result.avgMonthlyOvertimeCost).toBe(0)
   })
@@ -28,6 +29,7 @@ describe('deriveFiscalContext', () => {
       totalSalaryBudget: 1_000,
       numberOfOfficers: 10,
       avgAnnualSalary: 200,
+      overtimeRateMultiplier: 1,
     })
     expect(result.avgMonthlyOvertimeCost).toBeLessThan(0)
   })

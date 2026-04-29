@@ -1,7 +1,7 @@
 import type { MonthlyActualsRow } from '@/calc/index'
 import { fmtVariance, fmtDollar } from '@/lib/format'
 import { monthAbbr } from '@/lib/monthLabels'
-import { ActualVarianceCell } from './ActualVarianceCell'
+import { ActualMonthlySpendCell } from './ActualMonthlySpendCell'
 
 type Props = { rows: MonthlyActualsRow[] }
 
@@ -21,8 +21,8 @@ export function ActualsMonthlyTable({ rows }: Props) {
             Monthly monitoring
           </span>
           <p className="mt-1 max-w-3xl text-xs font-normal text-zinc-500">
-            Actual salary variance is entered as budgeted spend minus actual (same sign convention as
-            forecast). Monthly difference is |forecast variance| − |actual variance|.
+            Enter actual monthly spend. Actual variance is calculated as forecasted monthly spend
+            minus actual monthly spend.
           </p>
         </caption>
         <thead>
@@ -31,25 +31,22 @@ export function ActualsMonthlyTable({ rows }: Props) {
               Month
             </th>
             <th scope="col" className="px-4 py-2.5 text-right">
-              Forecast net variance
+              Actual monthly spend
             </th>
             <th scope="col" className="px-4 py-2.5 text-right">
               Actual variance
             </th>
-            <th scope="col" className="px-4 py-2.5 text-right">
-              Monthly difference
-            </th>
             <th scope="col" className="px-4 py-2.5">
               vs forecast
+            </th>
+            <th scope="col" className="px-4 py-2.5 text-right">
+              Forecast net variance
             </th>
             <th scope="col" className="hidden text-right lg:table-cell lg:px-4 lg:py-2.5">
               Budgeted monthly
             </th>
             <th scope="col" className="hidden text-right xl:table-cell xl:px-4 xl:py-2.5">
               Forecasted monthly spend
-            </th>
-            <th scope="col" className="hidden text-right xl:table-cell xl:px-4 xl:py-2.5">
-              Actual monthly spend
             </th>
           </tr>
         </thead>
@@ -60,29 +57,27 @@ export function ActualsMonthlyTable({ rows }: Props) {
                 {monthAbbr(r.month)}
               </th>
               <td className="px-4 py-2 text-right tabular-nums text-zinc-700">
-                {fmtVariance(r.forecastNetVariance)}
-              </td>
-              <td className="px-4 py-2">
-                <ActualVarianceCell
+                <ActualMonthlySpendCell
                   month={r.month}
-                  value={r.actualSalaryVariance}
-                  id={`actual-variance-${r.month}`}
+                  value={r.actualMonthlySpend}
+                  forecastedMonthlySpend={r.forecastedMonthlySpend}
+                  id={`actual-monthly-spend-${r.month}`}
                 />
               </td>
               <td className="px-4 py-2 text-right tabular-nums text-zinc-700">
-                {r.monthlyDifference === null ? '—' : fmtVariance(r.monthlyDifference)}
+                {r.actualSalaryVariance === null ? '—' : fmtVariance(r.actualSalaryVariance)}
               </td>
               <td className="max-w-[11rem] px-4 py-2 text-xs leading-snug text-zinc-500">
                 {vsForecastLabel(r.monthlyDifference)}
+              </td>
+              <td className="px-4 py-2 text-right tabular-nums text-zinc-700">
+                {fmtVariance(r.forecastNetVariance)}
               </td>
               <td className="hidden px-4 py-2 text-right tabular-nums text-zinc-600 lg:table-cell">
                 {fmtDollar(r.budgetedMonthlySpend)}
               </td>
               <td className="hidden px-4 py-2 text-right tabular-nums text-zinc-600 xl:table-cell">
                 {fmtDollar(r.forecastedMonthlySpend)}
-              </td>
-              <td className="hidden px-4 py-2 text-right tabular-nums text-zinc-600 xl:table-cell">
-                {r.actualMonthlySpend === null ? '—' : fmtDollar(r.actualMonthlySpend)}
               </td>
             </tr>
           ))}

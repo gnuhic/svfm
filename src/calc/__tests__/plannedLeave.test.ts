@@ -4,7 +4,11 @@ import { deriveFiscalContext } from '../fiscalContext'
 import { DEFAULTS } from '../index'
 
 describe('calcPlannedLeave', () => {
-  const fiscal = { ...deriveFiscalContext(DEFAULTS.fiscal), numberOfOfficers: DEFAULTS.fiscal.numberOfOfficers }
+  const fiscal = {
+    ...deriveFiscalContext(DEFAULTS.fiscal),
+    numberOfOfficers: DEFAULTS.fiscal.numberOfOfficers,
+    overtimeRateMultiplier: DEFAULTS.fiscal.overtimeRateMultiplier,
+  }
 
   it('officersAffected is locked to numberOfOfficers', () => {
     const result = calcPlannedLeave(DEFAULTS.plannedLeave, fiscal)
@@ -34,8 +38,14 @@ describe('calcPlannedLeave', () => {
     expect(result.salaryAvoidance).toBe(0)
   })
 
-  it('golden: net planned leave impact = −146,458.33', () => {
+  it('coverageSalaryCosts = officersAffected × (duration / 12) × avgAnnualSalary × backfillRate × overtimeRateMultiplier', () => {
     const result = calcPlannedLeave(DEFAULTS.plannedLeave, fiscal)
-    expect(result.netImpact).toBeCloseTo(-146_458.33, 2)
+    // 185 × (1.9 / 12) × 140,000 × 0.05 × 1 = 205,041.67
+    expect(result.coverageSalaryCosts).toBeCloseTo(205_041.67, 2)
+  })
+
+  it('golden: net planned leave impact = −205,041.67', () => {
+    const result = calcPlannedLeave(DEFAULTS.plannedLeave, fiscal)
+    expect(result.netImpact).toBeCloseTo(-205_041.67, 2)
   })
 })

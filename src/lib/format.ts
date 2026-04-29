@@ -2,9 +2,9 @@ const CA = new Intl.NumberFormat('en-CA', { maximumFractionDigits: 2, minimumFra
 const CA0 = new Intl.NumberFormat('en-CA', { maximumFractionDigits: 0 })
 const CA4 = new Intl.NumberFormat('en-CA', { maximumFractionDigits: 4, minimumFractionDigits: 2 })
 
-/** $1,234,567.89 */
+/** $1,234,568 — rounded to nearest dollar */
 export function fmtDollar(n: number): string {
-  return '$' + CA.format(n)
+  return '$' + CA0.format(n)
 }
 
 /** $1,234,568 — no cents, for large budget figures */
@@ -38,7 +38,7 @@ export function varianceColour(n: number): string {
   return 'text-zinc-600'
 }
 
-/** "+ $26,041.67" / "− $70,000.00" — with sign label for accessibility */
+/** "+ $26,042" / "− $70,000" — rounded to nearest dollar */
 export function fmtVariance(n: number): string {
-  return (n >= 0 ? '+ ' : '− ') + '$' + CA.format(Math.abs(n))
+  return (n >= 0 ? '+ ' : '− ') + '$' + CA0.format(Math.abs(n))
 }
