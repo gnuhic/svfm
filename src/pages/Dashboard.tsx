@@ -1,10 +1,11 @@
 import { useMemo, type ReactNode } from 'react'
 import { useAppStore } from '@/state/store'
-import { selectModelResults } from '@/state/selectors'
+import { selectActualsRows, selectModelResults } from '@/state/selectors'
 import type { AppData } from '@/state/types'
 import { SummaryCard } from '@/components/dashboard/SummaryCard'
 import { DriverCard } from '@/components/dashboard/DriverCard'
 import { YtdVarianceCard } from '@/components/dashboard/YtdVarianceCard'
+import { BudgetRemainingYtdCard } from '@/components/dashboard/BudgetRemainingYtdCard'
 import { MonthlyVarianceValueCard } from '@/components/dashboard/MonthlyVarianceValueCard'
 import { CumulativeForecastChart } from '@/components/dashboard/CumulativeForecastChart'
 import { fmtDollar, fmtDecimal, fmtInteger, fmtPct, fmtVariance } from '@/lib/format'
@@ -51,12 +52,15 @@ export default function Dashboard() {
   const latestCompleteYear = currentMonth === 1 ? currentYear - 1 : currentYear
   const throughLabel = `${monthFormatter.format(new Date(latestCompleteYear, latestCompleteMonth - 1, 1))} ${latestCompleteYear}`
   const currentMonthLabel = monthFormatter.format(new Date(currentYear, currentMonth - 1, 1))
+  const actualRows = useMemo(() => selectActualsRows(appData), [appData])
   const ytdBreakdown = useMemo(() => {
-    const actualByMonth = new Map(actuals.map((entry) => [entry.month, entry.actualSalaryVariance]))
+    const actualVarianceByMonth = new Map(
+      actualRows.map((row) => [row.month, row.actualSalaryVariance]),
+    )
 
     return Array.from({ length: latestCompleteMonth }, (_, idx) => {
       const month = idx + 1
-      const actualVariance = actualByMonth.get(month)
+      const actualVariance = actualVarianceByMonth.get(month)
       const forecastVariance = forecast.monthly[month - 1]?.netMonthlyVariance ?? 0
       const value = actualVariance ?? forecastVariance
       return {
@@ -65,10 +69,21 @@ export default function Dashboard() {
         value,
       }
     })
-  }, [actuals, forecast.monthly, latestCompleteMonth])
+  }, [actualRows, forecast.monthly, latestCompleteMonth])
   const ytdVariance = useMemo(() => {
     return ytdBreakdown.reduce((sum, line) => sum + line.value, 0)
   }, [ytdBreakdown])
+  const { totalActualSpentYtd, budgetRemainingYtd } = useMemo(() => {
+    const elapsedRows = actualRows.slice(0, latestCompleteMonth)
+    const totalActualSpent = elapsedRows.reduce((sum, row) => {
+      if (row.actualMonthlySpend === null) return sum
+      return sum + row.actualMonthlySpend
+    }, 0)
+    return {
+      totalActualSpentYtd: totalActualSpent,
+      budgetRemainingYtd: assumptions.totalSalaryBudget - totalActualSpent,
+    }
+  }, [actualRows, latestCompleteMonth])
 
   const vacancyTip = (
     <div className="space-y-3">
@@ -202,6 +217,12 @@ export default function Dashboard() {
               breakdown={ytdBreakdown}
             />
             <SummaryCard summary={summary} />
+            <BudgetRemainingYtdCard
+              totalAnnualBudget={assumptions.totalSalaryBudget}
+              totalActualSpentYtd={totalActualSpentYtd}
+              value={budgetRemainingYtd}
+              throughLabel={throughLabel}
+            />
           </div>
           <div className="grid min-w-0 flex-1 grid-cols-1 gap-4 sm:grid-cols-2">
             <DriverCard

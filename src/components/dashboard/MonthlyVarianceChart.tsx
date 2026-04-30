@@ -26,7 +26,7 @@ function kFmt(n: number): string {
 export function MonthlyVarianceChart({ data }: Props) {
   return (
     <div className="rounded-xl border border-zinc-200 bg-white p-5 print:break-inside-avoid">
-      <h3 className="mb-4 text-sm font-semibold text-zinc-700">Monthly Variance Forecast</h3>
+      <h3 className="mb-4 text-sm font-semibold text-zinc-700">Expected Monthly Variance</h3>
       <ResponsiveContainer width="100%" height={220}>
         <BarChart data={data} margin={{ top: 4, right: 8, bottom: 0, left: 8 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#e4e4e7" vertical={false} />

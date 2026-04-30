@@ -14,7 +14,10 @@ export type PlannedLeaveResult = {
   netImpact: number
 }
 
-type FiscalNeeded = FiscalContextDerived & { numberOfOfficers: number }
+type FiscalNeeded = FiscalContextDerived & {
+  numberOfOfficers: number
+  overtimeRateMultiplier: number
+}
 
 /**
  * Workbook row 19. Two formulas differ from rows 17 and 18:

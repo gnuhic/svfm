@@ -60,7 +60,6 @@ export function ActualsMonthlyTable({ rows }: Props) {
                 <ActualMonthlySpendCell
                   month={r.month}
                   value={r.actualMonthlySpend}
-                  forecastedMonthlySpend={r.forecastedMonthlySpend}
                   id={`actual-monthly-spend-${r.month}`}
                 />
               </td>

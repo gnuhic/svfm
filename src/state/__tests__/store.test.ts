@@ -294,7 +294,7 @@ describe('exportToJSON', () => {
 describe('selectModelResults', () => {
   it('returns the correct net yearly variance for defaults', () => {
     const results = selectModelResults(useAppStore.getState())
-    expect(results.summary.netYearlySalaryVariance).toBeCloseTo(26_041.67, 2)
+    expect(results.summary.netYearlySalaryVariance).toBeCloseTo(-202_941.67, 2)
   })
 
   it('reacts to assumption changes', () => {
@@ -310,9 +310,10 @@ describe('selectActualsRows', () => {
     expect(selectActualsRows(useAppStore.getState())).toHaveLength(12)
   })
 
-  it('reflects entered actuals', () => {
+  it('derives actual variance from entered monthly spend', () => {
     useAppStore.getState().updateActual(1, 5_000)
     const rows = selectActualsRows(useAppStore.getState())
-    expect(rows[0]?.actualSalaryVariance).toBe(5_000)
+    expect(rows[0]?.actualMonthlySpend).toBe(5_000)
+    expect(rows[0]?.actualSalaryVariance).toBeCloseTo(rows[0]!.forecastedMonthlySpend - 5_000, 2)
   })
 })

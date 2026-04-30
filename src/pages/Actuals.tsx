@@ -31,8 +31,8 @@ export default function Actuals() {
       <header className="border-b border-zinc-200 pb-6">
         <h1 className="text-lg font-semibold tracking-tight text-zinc-900">Actuals</h1>
         <p className="mt-1 max-w-3xl text-sm leading-relaxed text-zinc-600">
-          Enter monthly actual salary variance to compare realized spend against the budget baseline
-          and the forecast path for fiscal year {fiscalYear}.
+          Enter monthly actual spend to compare realized spend against the budget baseline and the
+          forecast path for fiscal year {fiscalYear}.
         </p>
       </header>
 

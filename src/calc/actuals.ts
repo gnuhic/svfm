@@ -23,7 +23,8 @@ export type MonthlyActualsRow = {
  *
  * Budgeted Monthly Spend[m]     = totalSalaryBudget / 12  (constant)
  * Forecasted Monthly Spend[m]   = Budgeted − Forecast Net Variance[m]
- * Actual Monthly Spend[m]       = Budgeted − Actual Variance[m]   (null if no actual)
+ * Actual Monthly Spend[m]       = user-entered monthly spend input (null if no input)
+ * Actual Variance[m]            = Forecasted Monthly Spend[m] − Actual Monthly Spend[m]
  * Monthly Difference[m]         = |forecast variance| − |actual variance|  (null if no actual)
  * Cumulative Expected Spend[m]  = Budgeted Monthly Spend × m
  * Cumulative Forecasted Spend   = running sum of Forecasted Monthly Spend
@@ -47,11 +48,11 @@ export function calcActuals(
     if (!fc) throw new Error(`Missing forecast for month ${m}`)
 
     const forecastNetVariance = fc.netMonthlyVariance
-    const actualSalaryVariance = actualByMonth.get(m) ?? null
+    const actualMonthlySpend = actualByMonth.get(m) ?? null
 
     const forecastedMonthlySpend = budgetedMonthlySpend - forecastNetVariance
-    const actualMonthlySpend =
-      actualSalaryVariance !== null ? budgetedMonthlySpend - actualSalaryVariance : null
+    const actualSalaryVariance =
+      actualMonthlySpend !== null ? forecastedMonthlySpend - actualMonthlySpend : null
 
     const monthlyDifference =
       actualSalaryVariance !== null

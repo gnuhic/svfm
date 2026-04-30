@@ -5,7 +5,6 @@ import { cn } from '@/lib/utils'
 type Props = {
   month: number
   value: number | null
-  forecastedMonthlySpend: number
   id: string
 }
 
@@ -16,7 +15,7 @@ function parseInput(raw: string): number | null {
   return Number.isFinite(n) ? n : NaN
 }
 
-export function ActualMonthlySpendCell({ month, value, forecastedMonthlySpend, id }: Props) {
+export function ActualMonthlySpendCell({ month, value, id }: Props) {
   const updateActual = useAppStore((s) => s.updateActual)
   const [draft, setDraft] = useState(() => (value === null ? '' : String(value)))
 
@@ -37,8 +36,7 @@ export function ActualMonthlySpendCell({ month, value, forecastedMonthlySpend, i
       return
     }
 
-    const derivedVariance = forecastedMonthlySpend - parsedSpend
-    updateActual(month, derivedVariance)
+    updateActual(month, parsedSpend)
     setDraft(String(parsedSpend))
   }
 

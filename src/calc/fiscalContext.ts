@@ -8,6 +8,7 @@ export type FiscalContextInputs = {
 export type FiscalContextDerived = {
   avgMonthlySalary: number
   avgMonthlyOvertimeCost: number
+  overtimeRateMultiplier: number
 }
 
 /**
@@ -22,5 +23,6 @@ export function deriveFiscalContext(inputs: FiscalContextInputs): FiscalContextD
     avgMonthlySalary: inputs.avgAnnualSalary / 12,
     avgMonthlyOvertimeCost:
       (inputs.totalSalaryBudget - inputs.avgAnnualSalary * inputs.numberOfOfficers) / 12,
+    overtimeRateMultiplier: inputs.overtimeRateMultiplier,
   }
 }

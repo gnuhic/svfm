@@ -1,6 +1,16 @@
-import { useCallback, useId, useRef, useState, type ChangeEventHandler, type FocusEventHandler } from 'react'
+import {
+  useCallback,
+  useId,
+  useRef,
+  useState,
+  type ChangeEventHandler,
+  type FocusEventHandler,
+} from 'react'
+import { toCanvas } from 'html-to-image'
+import { jsPDF } from 'jspdf'
 import { useAppStore } from '@/state/store'
 import { SCHEMA_VERSION } from '@/state/types'
+import Dashboard from '@/pages/Dashboard'
 import { cn } from '@/lib/utils'
 
 function downloadJson(filename: string, payload: string) {
@@ -36,8 +46,14 @@ export default function Settings() {
   const [importMessage, setImportMessage] = useState<{ kind: 'success' | 'error'; text: string } | null>(
     null,
   )
+  const [isGeneratingReport, setIsGeneratingReport] = useState(false)
+  const [reportMessage, setReportMessage] = useState<{ kind: 'success' | 'error'; text: string } | null>(null)
+  const [showReportSurface, setShowReportSurface] = useState(false)
+
+  const dashboardReportRef = useRef<HTMLDivElement>(null)
 
   const clearImportMessage = useCallback(() => setImportMessage(null), [])
+  const clearReportMessage = useCallback(() => setReportMessage(null), [])
 
   const handleExport = () => {
     clearImportMessage()
@@ -89,6 +105,73 @@ export default function Settings() {
     if (!ok) return
     resetToDefaults()
     setImportMessage({ kind: 'success', text: 'Defaults restored. Local configuration matches the model baseline.' })
+  }
+
+  const waitForPaint = async (frames = 2) => {
+    for (let i = 0; i < frames; i++) {
+      await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()))
+    }
+  }
+
+  const addImagePage = (pdf: jsPDF, title: string, canvas: HTMLCanvasElement, firstPage = false) => {
+    if (!firstPage) pdf.addPage()
+    const pageWidth = pdf.internal.pageSize.getWidth()
+    const pageHeight = pdf.internal.pageSize.getHeight()
+    const margin = 12
+
+    pdf.setFontSize(14)
+    pdf.text(title, margin, margin)
+
+    const maxWidth = pageWidth - margin * 2
+    const maxHeight = pageHeight - margin * 2 - 8
+    const ratio = Math.min(maxWidth / canvas.width, maxHeight / canvas.height)
+    const drawWidth = canvas.width * ratio
+    const drawHeight = canvas.height * ratio
+    const x = (pageWidth - drawWidth) / 2
+    const y = margin + 4
+
+    const imgData = canvas.toDataURL('image/png')
+    pdf.addImage(imgData, 'PNG', x, y, drawWidth, drawHeight, undefined, 'FAST')
+  }
+
+  const handleGenerateReport = async () => {
+    clearImportMessage()
+    clearReportMessage()
+    setIsGeneratingReport(true)
+    setShowReportSurface(true)
+
+    try {
+      await waitForPaint(3)
+      const targets: Array<{ title: string; element: HTMLDivElement | null }> = [
+        { title: 'Dashboard', element: dashboardReportRef.current },
+      ]
+
+      if (targets.some((t) => !t.element)) {
+        throw new Error('Report sections did not render in time. Please try again.')
+      }
+
+      const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
+      for (let i = 0; i < targets.length; i++) {
+        const target = targets[i]!
+        const canvas = await toCanvas(target.element as HTMLDivElement, {
+          pixelRatio: 2,
+          cacheBust: true,
+          backgroundColor: '#ffffff',
+        })
+        addImagePage(pdf, target.title, canvas, i === 0)
+      }
+
+      const stamp = new Date().toISOString().slice(0, 10)
+      const filename = `svfm-report-${fiscalYear}-${stamp}.pdf`
+      pdf.save(filename)
+      setReportMessage({ kind: 'success', text: `Report generated: ${filename}` })
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Failed to generate report.'
+      setReportMessage({ kind: 'error', text: msg })
+    } finally {
+      setShowReportSurface(false)
+      setIsGeneratingReport(false)
+    }
   }
 
   const onFiscalYearBlur: FocusEventHandler<HTMLInputElement> = (e) => {
@@ -189,6 +272,21 @@ export default function Settings() {
           >
             Reset to defaults
           </button>
+          <button
+            type="button"
+            onClick={() => {
+              void handleGenerateReport()
+            }}
+            disabled={isGeneratingReport}
+            className={cn(
+              'rounded border px-4 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:ring-offset-2',
+              isGeneratingReport
+                ? 'cursor-not-allowed border-zinc-200 bg-zinc-100 text-zinc-400'
+                : 'border-zinc-300 bg-white text-zinc-800 hover:bg-zinc-50',
+            )}
+          >
+            {isGeneratingReport ? 'Generating report…' : 'Generate report'}
+          </button>
         </div>
         <p className="mt-3 text-xs text-zinc-500">
           Import checks the schema version. Files from a newer or older format are rejected with an
@@ -207,7 +305,28 @@ export default function Settings() {
             {importMessage.text}
           </p>
         )}
+        {reportMessage && (
+          <p
+            role="status"
+            className={cn(
+              'mt-3 rounded border px-3 py-2 text-sm',
+              reportMessage.kind === 'success'
+                ? 'border-emerald-200 bg-emerald-50 text-emerald-900'
+                : 'border-red-200 bg-red-50 text-red-900',
+            )}
+          >
+            {reportMessage.text}
+          </p>
+        )}
       </section>
+
+      {showReportSurface && (
+        <div className="pointer-events-none fixed -left-[20000px] top-0 w-[1280px] bg-white p-6">
+          <div ref={dashboardReportRef}>
+            <Dashboard />
+          </div>
+        </div>
+      )}
     </div>
   )
 }

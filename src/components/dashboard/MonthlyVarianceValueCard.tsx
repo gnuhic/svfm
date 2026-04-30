@@ -8,7 +8,7 @@ export function MonthlyVarianceValueCard({ data }: Props) {
 
   return (
     <div className="rounded-xl border border-zinc-200 bg-white p-5 print:break-inside-avoid">
-      <h3 className="mb-4 text-sm font-semibold text-zinc-700">Monthly Variance Forecast</h3>
+      <h3 className="mb-4 text-sm font-semibold text-zinc-700">Expected Monthly Variance</h3>
       <div className="flex h-[220px] items-center justify-center">
         <div className="space-y-2 text-center">
           <p className={`text-4xl font-bold tabular-nums ${varianceColour(monthlyVariance)}`}>

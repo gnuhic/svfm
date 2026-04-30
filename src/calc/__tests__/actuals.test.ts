@@ -12,7 +12,7 @@ const { forecast } = runModel({
 
 const BUDGET = DEFAULTS.fiscal.totalSalaryBudget
 
-// Sample actuals from workbook (Jan–Apr entered, May–Dec blank)
+// Sample monthly actual spend inputs (Jan–Apr entered, May–Dec blank)
 const sampleActuals = [
   { month: 1, actualSalaryVariance: 5_000 },
   { month: 2, actualSalaryVariance: -8_000 },
@@ -41,10 +41,16 @@ describe('calcActuals', () => {
     })
   })
 
-  it('actualMonthlySpend = budgeted − actualVariance when present', () => {
+  it('actualMonthlySpend equals entered monthly spend input when present', () => {
     const rows = calcActuals(forecast.monthly, BUDGET, sampleActuals)
     const jan = rows[0]!
-    expect(jan.actualMonthlySpend).toBeCloseTo(BUDGET / 12 - 5_000, 2)
+    expect(jan.actualMonthlySpend).toBe(5_000)
+  })
+
+  it('actualSalaryVariance = forecastedMonthlySpend − actualMonthlySpend when present', () => {
+    const rows = calcActuals(forecast.monthly, BUDGET, sampleActuals)
+    const jan = rows[0]!
+    expect(jan.actualSalaryVariance).toBeCloseTo(jan.forecastedMonthlySpend - 5_000, 2)
   })
 
   it('actualMonthlySpend is null when no actual entered', () => {
@@ -78,9 +84,7 @@ describe('calcActuals', () => {
 
   it('cumulativeActualSpend[4] = sum of actual monthly spends for Jan–Apr', () => {
     const rows = calcActuals(forecast.monthly, BUDGET, sampleActuals)
-    const budgeted = BUDGET / 12
-    const expectedCumulative =
-      (budgeted - 5_000) + (budgeted + 8_000) + (budgeted - 2_000) + (budgeted - 4_500)
+    const expectedCumulative = 5_000 + -8_000 + 2_000 + 4_500
     expect(rows[3]!.cumulativeActualSpend).toBeCloseTo(expectedCumulative, 2)
   })
 
